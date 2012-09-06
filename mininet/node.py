@@ -473,6 +473,13 @@ class UserSwitch( Switch ):
         if not os.path.exists( '/dev/net/tun' ):
             moduleDeps( add=TUN )
 
+    def dpctl( self, *args ):
+        "Run dpctl command"
+        if not self.listenPort:
+            return "can't run dpctl without passive listening port"
+        return self.cmd( 'dpctl ' + ' '.join( args ) +
+                        ' tcp:127.0.0.1:%i' % self.listenPort )
+
     def start( self, controllers ):
         """Start OpenFlow reference user datapath.
            Log to /tmp/sN-{ofd,ofp}.log.
@@ -644,6 +651,10 @@ class OVSSwitch( Switch ):
                    '"ovs-vsctl show" works correctly.\n'
                    'You may wish to try "service openvswitch-switch start".\n' )
             exit( 1 )
+
+    def dpctl( self, *args ):
+        "Run ovs-dpctl command"
+        return self.cmd( 'ovs-dpctl', args[ 0 ], self.dp, *args[ 1: ] )
 
     def start( self, controllers ):
         "Start up a new OVS OpenFlow switch using ovs-vsctl"

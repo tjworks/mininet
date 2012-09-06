@@ -283,8 +283,7 @@ class CLI( Cmd ):
             return
         for sw in self.mn.switches:
             output( '*** ' + sw.name + ' ' + ('-' * 72) + '\n' )
-            output( sw.cmd( 'dpctl ' + ' '.join(args) +
-                            ' tcp:127.0.0.1:%i' % sw.listenPort ) )
+            output( sw.dpctl( *args ) )
 
     def default( self, line ):
         """Called on an input line when the command prefix is not recognized.
