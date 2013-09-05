@@ -32,6 +32,7 @@ from mininet.topo import SingleSwitchTopo, LinearTopo, SingleSwitchReversedTopo
 from mininet.topolib import TreeTopo
 from mininet.util import custom, customConstructor
 from mininet.util import buildTopo
+from mininet.rest import RestfulService
 
 
 # built in topologies, created only when run
@@ -193,6 +194,8 @@ class MininetRunner( object ):
         opts.add_option( '--pin', action='store_true',
                          default=False, help="pin hosts to CPU cores "
                          "(requires --host cfs or --host rt)" )
+        opts.add_option( '--rest', action='store_true', default=False, help="Start RESTful service")
+        opts.add_option( '--restport', type='int', default=8080, help="HTTP port used by RESTful service")
         opts.add_option( '--version', action='callback', callback=version )
 
         self.options, self.args = opts.parse_args()
@@ -257,7 +260,9 @@ class MininetRunner( object ):
         test = ALTSPELLING.get( test, test )
 
         mn.start()
-
+        if(self.options.rest):
+            rest = RestfulService(mn, self.options.restport)
+            rest.start()
         if test == 'none':
             pass
         elif test == 'all':
